@@ -49,6 +49,8 @@ export default function RSAReceiveMessage() {
     height: window.innerHeight,
   });
 
+  const [clickTaoKhoa, setClickTaoKhoa] = useState(false);
+
   useEffect(() => {
     window.onresize = () => {
       setSize({
@@ -461,13 +463,11 @@ export default function RSAReceiveMessage() {
     const messages = await getEncryptedMessages(userEmail);
     setEncryptedMessages(messages);
 
-
-      dispatch({
-        type: XEM_THU_GUI_DEN_RECEIVER,
-        Component: <HomThuReceiver />,
-        encryptedMessages: messages,
-      });
-
+    dispatch({
+      type: XEM_THU_GUI_DEN_RECEIVER,
+      Component: <HomThuReceiver />,
+      encryptedMessages: messages,
+    });
   };
 
   let marginTop = "";
@@ -535,7 +535,10 @@ export default function RSAReceiveMessage() {
                   style={{ marginTop: "-10px" }}
                   className="btn btn-primary mb-2"
                   id="generateKeyPairButton"
-                  onClick={generateKeyPair}
+                  onClick={() => {
+                    generateKeyPair();
+                    setClickTaoKhoa(true);
+                  }}
                 >
                   Tạo khóa
                 </button>
@@ -550,7 +553,7 @@ export default function RSAReceiveMessage() {
               </button> */}
               <div className="d-flex justify-content-center">
                 <button
-                style={{ marginTop: 10, marginRight: 7 }}
+                  style={{ marginTop: 10, marginRight: 7 }}
                   className="btn btn-info"
                   onClick={() => {
                     document.getElementById("privateKeyUploadFile").click();
@@ -567,8 +570,8 @@ export default function RSAReceiveMessage() {
                 />
                 {privateKey.d && (
                   <button
-                    style={{ marginTop: 10}}
-                    className="btn btn-info btn_saveKeyRes"
+                    style={{ marginTop: 10 }}
+                    className="btn btn-info"
                     onClick={savePrivateKeyToFile}
                   >
                     Lưu khóa bí mật
@@ -579,7 +582,12 @@ export default function RSAReceiveMessage() {
               <div id="keyDisplay">
                 {publicKey.n && publicKey.e && (
                   <div className="d-flex mb-2 mt-4 publicKeyDiv">
-                    <p className="key_1 publicKeyReceiver" style={{marginRight: "3%"}}>Khóa công khai:</p>
+                    <p
+                      className="key_1 publicKeyReceiver"
+                      style={{ marginRight: "3%" }}
+                    >
+                      Khóa công khai:
+                    </p>
                     <textarea
                       className="form-control textArea_TaoKhoa"
                       style={{ width: 300, height: 150 }}
@@ -607,17 +615,21 @@ export default function RSAReceiveMessage() {
                   </div>
                 )}
               </div>
-              <div>
-                <input
-                  type="email"
-                  placeholder="Recipient Email"
-                  value={recipientEmail}
-                  onChange={(e) => setRecipientEmail(e.target.value)}
-                />
-                <button onClick={handleSendPublicKey}>
-                  Gửi khóa công khai
-                </button>
-              </div>
+              {clickTaoKhoa ? (
+                <div style={{ marginLeft: "12%" }}>
+                  <input
+                    type="email"
+                    placeholder="Recipient Email"
+                    value={recipientEmail}
+                    onChange={(e) => setRecipientEmail(e.target.value)}
+                  />
+                  <button onClick={handleSendPublicKey}>
+                    Gửi khóa công khai
+                  </button>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
           <div className="col-4">
@@ -636,7 +648,7 @@ export default function RSAReceiveMessage() {
                   data-bs-toggle="modal"
                   data-bs-target="#exampleModal"
                   onClick={() => {
-                      handleFetchMessages();
+                    handleFetchMessages();
                   }}
                 >
                   Click vào để xem
@@ -672,7 +684,7 @@ export default function RSAReceiveMessage() {
                 </button>
               )}
 
-              <p style={{marginTop: marginTop}}>Kết quả sau khi giải mã:</p>
+              <p style={{ marginTop: marginTop }}>Kết quả sau khi giải mã:</p>
               <textarea
                 className="form-control textarea_SR"
                 style={{ width: 300, height: 300, margin: "auto" }}
