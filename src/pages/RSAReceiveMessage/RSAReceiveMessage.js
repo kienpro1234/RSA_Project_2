@@ -603,15 +603,9 @@ export default function RSAReceiveMessage() {
                       style={{ marginRight: "6%", marginLeft: "1%" }}
                       className="key_1"
                     >
-                      Khóa bí mật:
+                      Khóa bí mật(đã ẩn, Hãy lưu lại trước khi thoát trang)
                     </p>
-                    <textarea
-                      className="form-control textArea_TaoKhoa khoa2"
-                      style={{ width: 300, height: 150 }}
-                      id="privateKey"
-                      readOnly
-                      value={`d: ${privateKey.d}\nn: ${privateKey.n}`}
-                    />
+                    
                   </div>
                 )}
               </div>
