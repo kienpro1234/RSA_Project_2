@@ -1,76 +1,52 @@
 import React, { useState } from "react";
-import {
-  UserOutlined,
-  LockOutlined,
-  EyeTwoTone,
-  EyeInvisibleOutlined,
-} from "@ant-design/icons";
+import { UserOutlined, LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import { Button, Input } from "antd";
-import { withFormik } from "formik";
-import * as Yup from "yup";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
-// import { auth } from "../FireBase/FireBaseConfig/fireBaseConfig";
-// import { signInWithEmailAndPassword } from "firebase/auth";
-// import { RSAglobalNavigate } from "../util/RSAGlobalNavigate";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../FireBase/FireBaseConfig/fireBaseConfig";
-import Swal from 'sweetalert2';
+import CryptoJS from 'crypto-js';
 
-// export let loggined = false;
 export default function LoginCyberBugs(props) {
-  // const { values, touched, errors, handleChange, handleBlur, handleSubmit } =
-  //   props;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+
   async function handleSignIn(e) {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
+
+    // Băm mật khẩu bằng SHA-256
+    const hashedPassword = CryptoJS.SHA256(password).toString();
+
+    signInWithEmailAndPassword(auth, email, hashedPassword)
     .then((user) => {
-      console.log("user",user)
+      console.log("user", user);
       navigate("/home");
       localStorage.setItem("loggined", "true");
-      localStorage.setItem("email", JSON.stringify(email))
+      localStorage.setItem("email", JSON.stringify(email));
       dispatch({
         type: "LOGGINED_SUCCESS",
         loggined: true,
-      })
+      });
     })
     .catch((err) => {
-      Swal.fire({
-        title: "Login failed! Please check your email and password again!",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
+      console.log(err);
       localStorage.setItem("loggined", "false");
       dispatch({
         type: "LOGGINED_FAILED",
         loggined: false,
-      })
-    })
+      });
+    });
   }
-
 
   return (
     <form onSubmit={handleSignIn} className="container">
-      <div
-        className="d-flex flex-column justify-content-center align-items-center"
-        style={{ height: window.innerHeight }}
-      >
-        <h3
-          style={{ fontWeight: 300, fontSize: 35 }}
-          className="text-center mb-4"
-        >
-          Login
-        </h3>
+      <div className="d-flex flex-column justify-content-center align-items-center" style={{ height: window.innerHeight }}>
+        <h3 style={{ fontWeight: 300, fontSize: 35 }} className="text-center mb-4">Login</h3>
         <div>
           <Input
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
+            onChange={(e) => setEmail(e.target.value)}
             name="email"
             style={{ minWidth: "400px" }}
             size="large"
@@ -78,25 +54,18 @@ export default function LoginCyberBugs(props) {
             prefix={<UserOutlined />}
           />
         </div>
-        {/* <div className="text-danger">{errors.email}</div> */}
         <div>
           <Input.Password
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
+            onChange={(e) => setPassword(e.target.value)}
             name="password"
             style={{ minWidth: "400px" }}
             className="mt-3"
-            iconRender={(visible) =>
-              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-            }
+            iconRender={(visible) => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
             size="large"
             placeholder="Password"
             prefix={<LockOutlined />}
           />
         </div>
-        {/* <div className="text-danger">{errors.password}</div> */}
-        <div className="row"></div>
         <div className="d-flex flex-row">
           <Button
             htmlType="submit"
@@ -108,11 +77,8 @@ export default function LoginCyberBugs(props) {
             Login
           </Button>
         </div>
-        <div
-          className="mt-3 d-flex flex-row text-start"
-          style={{ minWidth: "400px", fontSize: "20px" }}
-        >
-          <p className="me-4">Don't have an account ?</p>
+        <div className="mt-3 d-flex flex-row text-start" style={{ minWidth: "400px", fontSize: "20px" }}>
+          <p className="me-4">Don't have an account?</p>
           <NavLink to={"/register"}>Sign Up</NavLink>
         </div>
         <div className="mt-3">
@@ -133,5 +99,3 @@ export default function LoginCyberBugs(props) {
     </form>
   );
 }
-
-
